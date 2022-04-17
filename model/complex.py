@@ -7,7 +7,7 @@ from model.fft import masked_fft
 
 class FourierAttention(nn.Module):
     def __init__(self, batch_first: bool, n_heads: int, dtype, *args, **kwargs):
-        super(FourierAttention, self).__init__()
+        super().__init__()
         self.heads = n_heads
         self.dtype = dtype
         self.feature_dim = -1
@@ -18,7 +18,7 @@ class FourierAttention(nn.Module):
     def forward(self, x: torch.Tensor, mask: torch.Tensor, *args, **kwargs) -> torch.Tensor:
         s = x.shape
         # x = x.view(*s[:-1], -1, self.heads)
-        x = torch.fft.fft(masked_fft(x, mask, dim=self.sequence_dim), dim=self.feature_dim)
+        x = torch.fft.fft(masked_fft(x, mask, dim=self.sequence_dim), dim=self.feature_dim, norm="ortho")
         # x = torch.flatten(x, start_dim=-2)
         if self.dtype == torch.cfloat:
             return x
@@ -28,7 +28,7 @@ class FourierAttention(nn.Module):
 
 class ComplexDropout(nn.Module):
     def __init__(self, p: float):
-        super(ComplexDropout, self).__init__()
+        super().__init__()
         self.p = p
 
     def forward(self, x):
@@ -53,7 +53,7 @@ def custom_layer_norm(
 
 class ComplexLayerNorm(nn.Module):
     def __init__(self, d_model: int, eps: float, *args, **kwargs):
-        super(ComplexLayerNorm, self).__init__()
+        super().__init__()
         self.eps = eps
 
     def forward(self, x):

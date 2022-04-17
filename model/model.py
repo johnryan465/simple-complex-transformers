@@ -6,6 +6,15 @@ from torch import Tensor
 from torch.nn import TransformerEncoder
 import math
 
+class Embedding(nn.Module):
+    def __init__(self, tokens, dims, dtype=None):
+        super().__init__()
+        self.linear = nn.Linear(tokens, dims, dtype=dtype, bias=False)
+        self.tokens = tokens
+        self.dtype = dtype
+
+    def forward(self, x):
+        return self.linear(F.one_hot(x, self.tokens).to(self.dtype))
 
 class TransformerModel(nn.Module):
 
@@ -16,7 +25,7 @@ class TransformerModel(nn.Module):
         self.model_type = 'Transformer'
         encoder_layers = TransformerEncoderLayer(d_model, nhead, d_hid, dropout, dtype=dtype)
         self.transformer_encoder = TransformerEncoder(encoder_layers, nlayers)
-        self.encoder = nn.Embedding(ntoken, d_model)
+        self.encoder = Embedding(ntoken, d_model, dtype=dtype)
         self.d_model = d_model
         self.decoder = nn.Linear(d_model, ntoken, **factory_kwargs)
 
@@ -24,9 +33,9 @@ class TransformerModel(nn.Module):
 
     def init_weights(self) -> None:
         initrange = 0.1
-        self.encoder.weight.data.uniform_(-initrange, initrange)
+        # self.encoder.linear.weight.data.uniform_(-initrange, initrange)
         self.decoder.bias.data.zero_()
-        self.decoder.weight.data.uniform_(-initrange, initrange)
+        # self.decoder.weight.data.uniform_(-initrange, initrange)
 
     def forward(self, src: Tensor, src_mask: Tensor) -> Tensor:
         """
