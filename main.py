@@ -22,6 +22,7 @@ from torch import nn, Tensor
 import torch.nn.functional as F
 from torch.nn import TransformerEncoder
 from torch.utils.data import dataset
+import torch_xla.core.xla_model as xm
 
 
 def generate_square_subsequent_mask(sz: int) -> Tensor:
@@ -50,8 +51,9 @@ train_data = data_process(train_iter)
 val_data = data_process(val_iter)
 test_data = data_process(test_iter)
 
+device = xm.xla_device()
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# device = #  torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 def batchify(data: Tensor, bsz: int) -> Tensor:
