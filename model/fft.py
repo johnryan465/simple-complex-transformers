@@ -16,4 +16,4 @@ def gen_dft_matrix(mask: torch.Tensor) -> torch.Tensor:
 def masked_fft(x: torch.Tensor, mask: torch.Tensor, dim: int) -> torch.Tensor:
     dft_matrix = gen_dft_matrix(mask)
     N = mask.shape[0]
-    return (1. / math.sqrt(N)) * torch.einsum('sd,sbf->dbf', dft_matrix, x)
+    return (1. / math.sqrt(N)) * torch.einsum('sd,dbf->sbf', dft_matrix, x)
