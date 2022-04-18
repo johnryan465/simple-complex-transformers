@@ -27,7 +27,7 @@ import torch_xla.core.xla_model as xm
 
 def generate_square_subsequent_mask(sz: int) -> Tensor:
     """Generates an upper-triangular matrix of -inf, with zeros on diag."""
-    return 1 - torch.triu(torch.ones(sz, sz), diagonal=1)
+    return 1 - torch.triu(torch.ones(sz, sz, dtype=torch.int), diagonal=1)
 
 
 train_iter = WikiText2(split='train', root='./data')
