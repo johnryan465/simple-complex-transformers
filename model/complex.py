@@ -32,11 +32,13 @@ class ComplexDropout(nn.Module):
         self.p = p
 
     def forward(self, x):
-        if x.is_complex():
-            mask = F.dropout(torch.ones_like(x.real), self.p)
-            return x * mask
-        else:
-            return F.dropout(x, self.p)
+        if self.training:
+            if x.is_complex():
+                mask = F.dropout(torch.ones_like(x.real), self.p)
+                return x * mask
+            else:
+                return F.dropout(x, self.p)
+        return x
 
 
 def custom_layer_norm(
