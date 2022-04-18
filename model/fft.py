@@ -2,13 +2,19 @@ import torch
 from torch.cuda import device
 import math
 
+
+def circulant(tensor, dim):
+    S = tensor.shape[dim]
+    tmp = torch.cat([tensor.flip((dim,)), torch.narrow(tensor.flip((dim,)), dim=dim, start=0, length=S-1)], dim=dim)
+    return tmp.unfold(dim, S, 1).flip((-1,)).T
+
 def gen_dft_matrix(mask: torch.Tensor) -> torch.Tensor:
     N = mask.shape[0]
     factor = torch.exp(torch.tensor(-1j * 2 * torch.pi)).to("cuda")
-    u = torch.arange(0., N, device="cuda")
-    w = torch.arange(0., N, device="cuda") / torch.arange(1., N+1, device="cuda")
+    u = circulant(torch.arange(0., N, device="cuda"))
+    w = (torch.arange(0., N, device="cuda") / torch.arange(1., N+1, device="cuda")).unsqueeze(-1)
 
-    powers = torch.outer(w, u)
+    powers = u * w
     mat = torch.pow(factor, powers)
     return mat * mask
 
